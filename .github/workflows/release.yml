@@ -13,9 +13,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    permissions:
-      contents: write
-
     env:
       BIN_NAME: fekit
 
@@ -29,6 +26,7 @@ jobs:
 
       - name: Package
         shell: bash
+        id: package
         run: |
           set -euo pipefail
 
@@ -56,7 +54,30 @@ jobs:
           mkdir -p dist
           cp "target/release/${BIN_NAME}${EXT}" "dist/${ASSET_NAME}"
 
-      - name: Upload
+          echo "asset_name=${ASSET_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.asset_name }}
+          path: dist/${{ steps.package.outputs.asset_name }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
