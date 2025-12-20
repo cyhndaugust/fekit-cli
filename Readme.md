@@ -9,7 +9,7 @@ curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/refs/heads/0.
 
 安装后可使用 `fekit` 或 `fk` 执行命令（`fk` 由安装脚本创建别名）。
 
-`--version` 输出优先使用构建时的 tag 版本（例如 `v0.1.5`），若未注入则回退到 `Cargo.toml` 版本。
+`--version` 输出优先使用构建时的 tag 版本（例如 `0.1.5`），若未注入则回退到 `Cargo.toml` 版本。
 
 ## 升级
 
@@ -25,12 +25,12 @@ fekit upgrade
 ./scripts/next-tag.sh
 ```
 
-脚本要求当前分支名为 `X.Y` 格式；否则将提示无法创建 tag。它会基于当前分支已合并的最新 `vX.Y.Z` tag 自动补丁 +1 并推送到远程，从而触发 GitHub Actions 打包；如果当前分支没有 `vX.Y.*` tag，则从 `vX.Y.0` 起步。
+脚本要求当前分支名为 `X.Y` 格式；否则将提示无法创建 tag。它会基于当前分支已合并的最新 `X.Y.Z` tag 自动补丁 +1 并推送到远程，从而触发 GitHub Actions 打包；如果当前分支没有 `X.Y.*` tag，则从 `X.Y.0` 起步。
 
 ## 开发操作
 ```zsh
 # push tag 到远程
-git tag v0.1.5 && git push origin v0.1.5
+git tag 0.1.5 && git push origin 0.1.5
 ```
 
 ## 子命令功能

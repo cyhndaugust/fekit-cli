@@ -10,7 +10,7 @@ fn main() {
     }
 
     if let Some(tag) = latest_git_tag() {
-        let normalized = tag.trim().trim_start_matches('v');
+        let normalized = tag.trim();
         if !normalized.is_empty() {
             println!("cargo:rustc-env=FEKIT_VERSION={normalized}");
         }

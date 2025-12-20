@@ -127,7 +127,7 @@ fn fetch_latest_version() -> Result<Option<String>, String> {
         .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string())))
 }
 
-/// 规范化版本号，去掉前导 v。
+/// 规范化版本号，去掉前导 v（兼容旧标签）。
 ///
 /// 参数：
 /// - `version`：原始版本字符串。

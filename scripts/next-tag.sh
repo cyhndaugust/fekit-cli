@@ -17,29 +17,29 @@ fi
 major=$(echo "$branch" | cut -d. -f1)
 minor=$(echo "$branch" | cut -d. -f2)
 
-latest_tag=$(git tag --merged HEAD --list "v${major}.${minor}.*" --sort=-v:refname | head -n 1)
+latest_tag=$(git tag --merged HEAD --list "${major}.${minor}.*" --sort=-v:refname | head -n 1)
 
 case "$latest_tag" in
-  v[0-9]*.[0-9]*.[0-9]*)
+  [0-9]*.[0-9]*.[0-9]*)
     :
     ;;
   "")
-    latest_tag="v${major}.${minor}.0"
+    latest_tag="${major}.${minor}.0"
     ;;
   *)
-    echo "最新 tag 格式不符合 vX.Y.Z：$latest_tag" >&2
+    echo "最新 tag 格式不符合 X.Y.Z：$latest_tag" >&2
     exit 1
     ;;
 esac
 
-version=${latest_tag#v}
+version=${latest_tag}
 patch=$(echo "$version" | cut -d. -f3)
 
-if [ "$latest_tag" = "v${major}.${minor}.0" ]; then
+if [ "$latest_tag" = "${major}.${minor}.0" ]; then
   next_tag="$latest_tag"
 else
   patch=$((patch + 1))
-  next_tag="v${major}.${minor}.${patch}"
+  next_tag="${major}.${minor}.${patch}"
 fi
 
 echo "最新 tag: $latest_tag"
