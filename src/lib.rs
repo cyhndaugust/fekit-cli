@@ -10,14 +10,8 @@ pub fn match_command(args: &Args) {
 
     // 匹配具体子命令
     match &args.command {
-        Commands::Init { force } => {
-            println!("running init, force: {}", force);
-        }
-        Commands::Build { target } => {
-            println!("running build, target: {}", target);
-        }
-        Commands::Deploy { env, verbose } => {
-            println!("running deploy, env: {}, verbose: {}", env, verbose);
+        Commands::Tag { version } => {
+            println!("前端tag更新， version={}", version);
         }
     }
 }

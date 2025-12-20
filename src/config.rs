@@ -9,35 +9,17 @@ pub struct Args {
     #[arg(short, long, global = true)]
     pub debug: bool,
 
-    /// 子命令: init / build / deploy / ...
+    /// 子命令
     #[command(subcommand)]
     pub command: Commands,
 }
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// 初始化项目
-    Init {
-        /// 是否强制初始化
-        #[arg(short, long)]
-        force: bool,
-    },
-
-    /// 编译项目
-    Build {
-        /// 设置编译目标
-        #[arg(short, long, default_value = "debug")]
-        target: String,
-    },
-
-    /// 部署项目
-    Deploy {
-        /// 指定部署环境
-        #[arg(short, long)]
-        env: String,
-
-        /// 是否详细输出
-        #[arg(short, long)]
-        verbose: bool,
+    /// 创建前端项目的 git tag
+    Tag {
+        /// 指定版本号
+        #[arg(short, long, default_value = "1.0.0")]
+        version: String, 
     },
 }
