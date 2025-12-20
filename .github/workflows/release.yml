@@ -38,7 +38,7 @@ jobs:
             "target/release/${BIN_NAME}.exe" --help >/dev/null
             "target/release/fk.exe" --help >/dev/null
           else
-            ln -sf "target/release/${BIN_NAME}" "target/release/fk"
+            ln -sf "${BIN_NAME}" "target/release/fk"
             "./target/release/${BIN_NAME}" --help >/dev/null
             "./target/release/fk" --help >/dev/null
           fi
