@@ -4,7 +4,7 @@
 
 ```zsh
 # 注意需要匹配最新的安装脚本才能安装最新版本
-curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/refs/tags/v0.1.5/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/refs/heads/0.1/install.sh | sh
 ```
 
 安装后可使用 `fekit` 或 `fk` 执行命令（`fk` 由安装脚本创建别名）。
