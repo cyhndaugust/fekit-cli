@@ -9,6 +9,8 @@ curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/refs/heads/0.
 
 安装后可使用 `fekit` 或 `fk` 执行命令（`fk` 由安装脚本创建别名）。
 
+`--version` 输出优先使用构建时的 tag 版本（例如 `v0.1.5`），若未注入则回退到 `Cargo.toml` 版本。
+
 ## 升级
 
 ```zsh

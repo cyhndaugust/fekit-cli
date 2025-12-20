@@ -2,10 +2,16 @@
 
 use clap::{Parser, Subcommand};
 
+/// CLI 版本号，优先使用构建时注入的 tag 版本。
+const CLI_VERSION: &str = match option_env!("FEKIT_VERSION") {
+    Some(version) => version,
+    None => env!("CARGO_PKG_VERSION"),
+};
+
 /// CLI 全局参数。
 #[derive(Parser, Debug)]
 #[command(name = "fekit")]
-#[command(version)]
+#[command(version = CLI_VERSION)]
 #[command(about = "Front-end toolkit CLI.", long_about = None)]
 pub struct Args {
     /// 全局调试选项，各个子命令都可用。
