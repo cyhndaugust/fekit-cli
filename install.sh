@@ -34,12 +34,17 @@ URL="https://github.com/$REPO/releases/latest/download/$ASSET"
 INSTALL_DIR="${FEKIT_INSTALL_DIR:-$HOME/.local/bin}"
 mkdir -p "$INSTALL_DIR"
 DEST="$INSTALL_DIR/$BIN$EXT"
+ALIAS="$INSTALL_DIR/fk$EXT"
 
 echo "Downloading $ASSET ..."
 curl -fsSL "$URL" -o "$DEST"
 chmod +x "$DEST"
 
+cp "$DEST" "$ALIAS"
+chmod +x "$ALIAS"
+
 echo "已安装到 $DEST"
+echo "已创建别名 $ALIAS"
 
 if ! printf '%s' "$PATH" | tr ':' '\n' | grep -qx "$INSTALL_DIR"; then
   PROFILE=""

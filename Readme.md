@@ -6,15 +6,17 @@
 curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/master/install.sh | sh
 ```
 
+安装后可使用 `fekit` 或 `fk` 执行命令。
+
 ## 子命令功能
 
 ### tag 功能描述（生产使用说明）
 
 #### 命令详情
 ```zsh
-fekit tag [version] # 版本号可选，如 1.0.0 或 xxx/1.0.0
-fekit tag # 不带版本号时根据规则预生成下一个版本
-fekit tag --push # --push 推送版本到远程
+fk tag [version] # 版本号可选，如 1.0.0 或 xxx/1.0.0
+fk tag # 不带版本号时根据规则预生成下一个版本
+fk tag --push # --push 推送版本到远程
 ```
 
 #### 作用
