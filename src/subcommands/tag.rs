@@ -1,6 +1,6 @@
+use crate::output;
 use regex::Regex;
 use std::fs;
-use std::io::{self, Write};
 use std::path::Path;
 use std::process::Command;
 
@@ -39,7 +39,7 @@ pub fn run_tag_command(input_version: Option<&str>, push_remote: bool) -> Result
 
     print_tag_preview(&current_version, &candidate)?;
     if !confirm_proceed()? {
-        println!("已取消执行。");
+        output::warn("已取消执行。");
         return Ok(());
     }
 
@@ -48,15 +48,16 @@ pub fn run_tag_command(input_version: Option<&str>, push_remote: bool) -> Result
         .map_err(|err| format!("写入 package.json 失败: {err}"))?;
 
     git_command(&["add", "package.json"])?;
-    git_command(&["commit", "-m", &format!("release {candidate}")])?;
+    git_command(&["commit", "-m", &format!("tag@{candidate}")])?;
     git_command(&["tag", &candidate])?;
 
     if push_remote {
         git_command(&["push"])?;
         git_command(&["push", "origin", &candidate])?;
+        output::success(&format!("已完成 tag 发布并推送远程：{candidate}"));
+    } else {
+        output::success(&format!("已完成本地 tag 创建：{candidate}"));
     }
-
-    println!("已完成 tag 发布：{candidate}");
     Ok(())
 }
 
@@ -154,22 +155,14 @@ fn remote_tag_exists(tag: &str) -> Result<bool, String> {
 }
 
 fn print_tag_preview(current: &str, target: &str) -> Result<(), String> {
-    let green = "\x1b[32m";
-    let reset = "\x1b[0m";
-    println!("{green}即将创建 tag：{target}（当前版本：{current}）{reset}");
+    output::info(&format!(
+        "即将创建 tag：{target}（当前版本：{current}）"
+    ));
     Ok(())
 }
 
 fn confirm_proceed() -> Result<bool, String> {
-    print!("按回车继续，其它输入取消：");
-    io::stdout()
-        .flush()
-        .map_err(|err| format!("输出提示失败: {err}"))?;
-    let mut input = String::new();
-    io::stdin()
-        .read_line(&mut input)
-        .map_err(|err| format!("读取输入失败: {err}"))?;
-    Ok(input.trim().is_empty())
+    output::confirm_enter("按回车继续，其它按键取消...")
 }
 
 fn git_command(args: &[&str]) -> Result<String, String> {

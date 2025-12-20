@@ -14,6 +14,7 @@ curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/master/instal
 ```zsh
 fekit tag [version] # 版本号可选，如 1.0.0 或 xxx/1.0.0
 fekit tag # 不带版本号时根据规则预生成下一个版本
+fekit tag --push # --push 推送版本到远程
 ```
 
 #### 作用
@@ -33,8 +34,12 @@ fekit tag # 不带版本号时根据规则预生成下一个版本
 - 若远程已存在该 tag，提示并退出，等待用户调整 version 后重试。
 
 #### 确认与发布流程
-预生成成功后会提示当前版本与目标 tag（绿色提示）。
+预生成成功后会提示当前版本与目标 tag。
 用户按回车表示同意继续，其余按键终止执行。确认后执行以下动作：
 1) 将 `package.json` 的 `version` 更新为目标 tag 版本。
-2) 提交版本变更。
-3) 创建对应 tag，并推送提交与 tag 到远程。
+2) 提交版本变更（提交信息格式：`tag@1.0.0`）。
+3) 创建对应 tag。
+
+#### 远程推送
+默认仅创建本地提交与 tag，不会推送远程。若需推送，请在命令中显式指定：
+`fekit tag --push`

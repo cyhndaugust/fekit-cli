@@ -2,6 +2,7 @@ use crate::config::{Args, Commands};
 use crate::subcommands::tag::run_tag_command;
 
 pub mod config;
+pub mod output;
 pub mod subcommands;
 
 pub fn match_command(args: &Args) {
@@ -14,7 +15,7 @@ pub fn match_command(args: &Args) {
     match &args.command {
         Commands::Tag { version, push } => {
             if let Err(err) = run_tag_command(version.as_deref(), *push) {
-                eprintln!("{}", err);
+                output::error(&err);
                 std::process::exit(1);
             }
         }
