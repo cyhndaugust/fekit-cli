@@ -1,3 +1,5 @@
+//! tag 子命令实现：版本预生成、提交与可选推送。
+
 use crate::output;
 use regex::Regex;
 use std::fs;
@@ -5,6 +7,7 @@ use std::path::Path;
 use std::process::Command;
 
 #[derive(Debug)]
+/// 解析后的版本信息。
 struct ParsedVersion {
     prefix: Option<String>,
     major: u64,
@@ -12,6 +15,15 @@ struct ParsedVersion {
     patch: u64,
 }
 
+/// 执行 tag 子命令的完整流程。
+///
+/// 参数：
+/// - `input_version`：用户指定的版本号，`None` 表示使用 package.json 当前版本。
+/// - `push_remote`：是否推送提交与 tag 到远程。
+///
+/// 返回：
+/// - `Ok(())`：执行成功。
+/// - `Err(String)`：执行失败并附带错误信息。
 pub fn run_tag_command(input_version: Option<&str>, push_remote: bool) -> Result<(), String> {
     ensure_git_repo()?;
     let package_path = Path::new("package.json");
@@ -61,6 +73,14 @@ pub fn run_tag_command(input_version: Option<&str>, push_remote: bool) -> Result
     Ok(())
 }
 
+/// 校验当前目录是否为 git 仓库。
+///
+/// 参数：
+/// - 无。
+///
+/// 返回：
+/// - `Ok(())`：当前目录为 git 仓库。
+/// - `Err(String)`：检测失败或非 git 仓库。
 fn ensure_git_repo() -> Result<(), String> {
     let output = Command::new("git")
         .args(["rev-parse", "--is-inside-work-tree"])
@@ -76,6 +96,14 @@ fn ensure_git_repo() -> Result<(), String> {
     Ok(())
 }
 
+/// 从 package.json 文本中提取 version 字段。
+///
+/// 参数：
+/// - `content`：package.json 的文本内容。
+///
+/// 返回：
+/// - `Some(String)`：提取到的版本号。
+/// - `None`：未找到 version 字段。
 fn extract_package_version(content: &str) -> Option<String> {
     let regex = Regex::new(r#""version"\s*:\s*"([^"]+)""#).ok()?;
     regex
@@ -83,6 +111,15 @@ fn extract_package_version(content: &str) -> Option<String> {
         .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()))
 }
 
+/// 替换 package.json 中的 version 字段为目标版本。
+///
+/// 参数：
+/// - `content`：package.json 的文本内容。
+/// - `new_version`：要写入的新版本号。
+///
+/// 返回：
+/// - `Ok(String)`：替换后的文本内容。
+/// - `Err(String)`：替换失败或未找到 version 字段。
 fn replace_package_version(content: &str, new_version: &str) -> Result<String, String> {
     let regex = Regex::new(r#""version"\s*:\s*"([^"]+)""#)
         .map_err(|err| format!("正则初始化失败: {err}"))?;
@@ -94,6 +131,14 @@ fn replace_package_version(content: &str, new_version: &str) -> Result<String, S
         .to_string())
 }
 
+/// 解析用户输入的版本字符串，支持前缀与两段/三段版本。
+///
+/// 参数：
+/// - `input`：用户输入的版本字符串。
+///
+/// 返回：
+/// - `Ok(ParsedVersion)`：解析成功的版本结构。
+/// - `Err(String)`：版本格式不合法。
 fn parse_version(input: &str) -> Result<ParsedVersion, String> {
     let mut parts = input.split('/');
     let (prefix, version) = match (parts.next(), parts.next(), parts.next()) {
@@ -123,6 +168,14 @@ fn parse_version(input: &str) -> Result<ParsedVersion, String> {
     })
 }
 
+/// 解析版本号的数值部分，确保为数字。
+///
+/// 参数：
+/// - `value`：版本号的数字字符串。
+///
+/// 返回：
+/// - `Ok(u64)`：解析后的数字。
+/// - `Err(String)`：非法数字。
 fn parse_number(value: &str) -> Result<u64, String> {
     if value.is_empty() || !value.chars().all(|c| c.is_ascii_digit()) {
         return Err("版本号必须为数字".to_string());
@@ -132,6 +185,13 @@ fn parse_number(value: &str) -> Result<u64, String> {
         .map_err(|_| "版本号数字解析失败".to_string())
 }
 
+/// 根据解析结果生成 tag 字符串。
+///
+/// 参数：
+/// - `version`：解析后的版本信息。
+///
+/// 返回：
+/// - `String`：生成的 tag 字符串。
 fn build_tag(version: &ParsedVersion) -> String {
     let core = format!("{}.{}.{}", version.major, version.minor, version.patch);
     match &version.prefix {
@@ -140,11 +200,29 @@ fn build_tag(version: &ParsedVersion) -> String {
     }
 }
 
+/// 判断本地是否已存在同名 tag。
+///
+/// 参数：
+/// - `tag`：待检查的 tag 名称。
+///
+/// 返回：
+/// - `Ok(true)`：本地已存在该 tag。
+/// - `Ok(false)`：本地不存在该 tag。
+/// - `Err(String)`：git 命令执行失败。
 fn tag_exists_local(tag: &str) -> Result<bool, String> {
     let output = git_command(&["tag", "--list", tag])?;
     Ok(!output.trim().is_empty())
 }
 
+/// 判断远程 origin 是否存在同名 tag。
+///
+/// 参数：
+/// - `tag`：待检查的 tag 名称。
+///
+/// 返回：
+/// - `Ok(true)`：远程已存在该 tag。
+/// - `Ok(false)`：远程不存在该 tag。
+/// - `Err(String)`：git 命令执行失败或未配置远程。
 fn remote_tag_exists(tag: &str) -> Result<bool, String> {
     let remotes = git_command(&["remote"])?;
     if !remotes.lines().any(|line| line.trim() == "origin") {
@@ -154,17 +232,41 @@ fn remote_tag_exists(tag: &str) -> Result<bool, String> {
     Ok(!output.trim().is_empty())
 }
 
+/// 输出 tag 预览信息，提示当前版本与目标 tag。
+///
+/// 参数：
+/// - `current`：当前版本号。
+/// - `target`：目标 tag 版本号。
+///
+/// 返回：
+/// - `Ok(())`：输出成功。
+/// - `Err(String)`：输出失败。
 fn print_tag_preview(current: &str, target: &str) -> Result<(), String> {
-    output::info(&format!(
-        "即将创建 tag：{target}（当前版本：{current}）"
-    ));
+    output::info(&format!("即将创建 tag：{target}（当前版本：{current}）"));
     Ok(())
 }
 
+/// 询问用户是否继续执行后续操作。
+///
+/// 参数：
+/// - 无。
+///
+/// 返回：
+/// - `Ok(true)`：用户确认继续。
+/// - `Ok(false)`：用户取消或退出。
+/// - `Err(String)`：读取输入失败。
 fn confirm_proceed() -> Result<bool, String> {
     output::confirm_ynq("确认继续？(y=继续, n=取消, q=退出)：")
 }
 
+/// 执行 git 命令并返回标准输出。
+///
+/// 参数：
+/// - `args`：git 命令参数列表。
+///
+/// 返回：
+/// - `Ok(String)`：命令标准输出。
+/// - `Err(String)`：命令执行失败及错误信息。
 fn git_command(args: &[&str]) -> Result<String, String> {
     let output = Command::new("git")
         .args(args)
