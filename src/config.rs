@@ -19,7 +19,10 @@ pub enum Commands {
     /// 创建前端项目的 git tag
     Tag {
         /// 指定版本号
-        #[arg(short, long, default_value = "1.0.0")]
-        version: String, 
+        #[arg(short, long)]
+        version: Option<String>,
+        /// 是否推送到远程
+        #[arg(long, default_value_t = false)]
+        push: bool,
     },
 }
