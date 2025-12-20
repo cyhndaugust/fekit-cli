@@ -6,7 +6,7 @@
 curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/master/install.sh | sh
 ```
 
-安装后可使用 `fekit` 或 `fk` 执行命令。
+安装后可使用 `fekit` 或 `fk` 执行命令（`fk` 由安装脚本创建别名）。
 
 ## 子命令功能
 
