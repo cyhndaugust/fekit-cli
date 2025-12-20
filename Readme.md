@@ -9,6 +9,14 @@ curl -fsSL https://raw.githubusercontent.com/cyhndaugust/fekit-cli/refs/heads/0.
 
 安装后可使用 `fekit` 或 `fk` 执行命令（`fk` 由安装脚本创建别名）。
 
+## 升级
+
+```zsh
+fekit upgrade
+```
+
+执行后将自动下载最新版本并替换当前可执行文件（部分系统可能需要退出后手动替换）。
+
 ## 开发操作
 ```zsh
 # push tag 到远程

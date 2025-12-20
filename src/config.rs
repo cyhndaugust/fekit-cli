@@ -53,4 +53,6 @@ pub enum Commands {
         #[arg(long, default_value_t = false)]
         push: bool,
     },
+    /// 升级到最新版本
+    Upgrade,
 }
