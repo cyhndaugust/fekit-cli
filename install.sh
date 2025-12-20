@@ -40,8 +40,12 @@ echo "Downloading $ASSET ..."
 curl -fsSL "$URL" -o "$DEST"
 chmod +x "$DEST"
 
-cp "$DEST" "$ALIAS"
-chmod +x "$ALIAS"
+if ln -sf "$DEST" "$ALIAS" 2>/dev/null; then
+  :
+else
+  cp "$DEST" "$ALIAS"
+  chmod +x "$ALIAS"
+fi
 
 echo "已安装到 $DEST"
 echo "已创建别名 $ALIAS"
