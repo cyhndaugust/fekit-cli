@@ -22,20 +22,25 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Build
-        run: cargo build --release --locked
+        run: cargo build --release --locked --bin ${{ env.BIN_NAME }}
 
       - name: Smoke test (fekit/fk)
         shell: bash
         run: |
           set -euo pipefail
+          if [ ! -f "target/release/${BIN_NAME}.exe" ] && [ ! -f "target/release/${BIN_NAME}" ]; then
+            echo "未找到二进制：target/release/${BIN_NAME}" >&2
+            ls -la target/release || true
+            exit 1
+          fi
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp "target/release/${BIN_NAME}.exe" "target/release/fk.exe"
             "target/release/${BIN_NAME}.exe" --help >/dev/null
             "target/release/fk.exe" --help >/dev/null
           else
             ln -sf "target/release/${BIN_NAME}" "target/release/fk"
-            "target/release/${BIN_NAME}" --help >/dev/null
-            "target/release/fk" --help >/dev/null
+            "./target/release/${BIN_NAME}" --help >/dev/null
+            "./target/release/fk" --help >/dev/null
           fi
 
       - name: Package
