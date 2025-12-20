@@ -18,6 +18,7 @@ major=$(echo "$branch" | cut -d. -f1)
 minor=$(echo "$branch" | cut -d. -f2)
 
 latest_tag=$(git tag --merged HEAD --list "${major}.${minor}.*" --sort=-v:refname | head -n 1)
+has_tag=1
 
 case "$latest_tag" in
   [0-9]*.[0-9]*.[0-9]*)
@@ -25,6 +26,7 @@ case "$latest_tag" in
     ;;
   "")
     latest_tag="${major}.${minor}.0"
+    has_tag=0
     ;;
   *)
     echo "最新 tag 格式不符合 X.Y.Z：$latest_tag" >&2
@@ -35,7 +37,7 @@ esac
 version=${latest_tag}
 patch=$(echo "$version" | cut -d. -f3)
 
-if [ "$latest_tag" = "${major}.${minor}.0" ]; then
+if [ "$has_tag" -eq 0 ]; then
   next_tag="$latest_tag"
 else
   patch=$((patch + 1))
