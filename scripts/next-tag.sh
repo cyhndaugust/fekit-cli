@@ -7,7 +7,7 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 branch=$(git rev-parse --abbrev-ref HEAD)
-if printf '%s' "$branch" | grep -Eq '^[0-9]+\\.[0-9]+$'; then
+if printf '%s' "$branch" | grep -Eq '^[0-9]+\.[0-9]+$'; then
   :
 else
   echo "当前分支名必须为 X.Y 格式，无法创建 tag：$branch" >&2
