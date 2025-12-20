@@ -162,7 +162,7 @@ fn print_tag_preview(current: &str, target: &str) -> Result<(), String> {
 }
 
 fn confirm_proceed() -> Result<bool, String> {
-    output::confirm_enter("按回车继续，其它按键取消...")
+    output::confirm_ynq("确认继续？(y=继续, n=取消, q=退出)：")
 }
 
 fn git_command(args: &[&str]) -> Result<String, String> {
